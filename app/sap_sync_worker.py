@@ -33,9 +33,12 @@ def run_sync():
         from app.sap_client import SAPClient
         client = SAPClient()
 
-        sync_status.update({"progress": 10, "message": "Obteniendo catálogo desde SAP (puede tomar varios minutos)..."})
+        # ── FASE 1: SAP ─────────────────────────────────────────────────────────
+        sync_status.update({
+            "progress": 10,
+            "message": "Obteniendo catálogo desde SAP (puede tomar varios minutos)...",
+        })
 
-        # Single paginated call: Items + warehouse stock expanded + price list 1
         items = client.get_all_pages(
             "Items",
             params={
@@ -49,11 +52,12 @@ def run_sync():
         )
 
         total = len(items)
-        sync_status.update({"progress": 75, "message": f"Procesando {total} ítems..."})
+        sync_status.update({"progress": 65, "message": f"Procesando {total} ítems SAP..."})
         logger.info(f"[Sync] {total} ítems recibidos desde SAP.")
 
-        product_rows = []
-        stock_rows = []
+        # sku → (name, name_norm, item_type, price)
+        products_map: dict[str, tuple] = {}
+        stock_rows: list[tuple] = []
 
         for item in items:
             sku = (item.get("ItemCode") or "").strip()
@@ -70,15 +74,40 @@ def run_sync():
                     price = float(p.get("Price") or 0)
                     break
 
-            product_rows.append((sku, name, name_norm, item_type, price))
+            products_map[sku] = (name, name_norm, item_type, price)
 
             for wh in item.get("ItemWarehouseInfoCollection") or []:
                 code = (wh.get("WarehouseCode") or "").strip()
                 if code in WAREHOUSES:
-                    on_hand = float(wh.get("InStock") or 0)
-                    stock_rows.append((sku, code, on_hand))
+                    stock_rows.append((sku, code, float(wh.get("InStock") or 0)))
 
-        sync_status.update({"progress": 90, "message": "Guardando en base de datos local..."})
+        # ── FASE 2: WooCommerce (enriquecimiento de imágenes, opcional) ──────────
+        image_map: dict[str, str] = {}
+        try:
+            from app.woo_client import WooImageClient
+            woo = WooImageClient()
+            if woo.is_configured():
+                sync_status.update({
+                    "progress": 70,
+                    "message": "Obteniendo imágenes desde WooCommerce...",
+                })
+                image_map = woo.get_sku_image_map()
+                logger.info(f"[Sync] {len(image_map)} imágenes obtenidas de WooCommerce.")
+            else:
+                logger.info("[Sync] WooCommerce no configurado — se omite enriquecimiento de imágenes.")
+        except Exception as e:
+            logger.warning(f"[Sync] Error al obtener imágenes de WooCommerce (no crítico): {e}")
+
+        # ── FASE 3: Persistir en SQLite ─────────────────────────────────────────
+        sync_status.update({"progress": 85, "message": "Guardando en base de datos local..."})
+
+        matched = 0
+        product_rows = []
+        for sku, (name, name_norm, item_type, price) in products_map.items():
+            image_url = image_map.get(sku, "")
+            if image_url:
+                matched += 1
+            product_rows.append((sku, name, name_norm, item_type, price, image_url))
 
         init_db()
         conn = get_db()
@@ -86,7 +115,8 @@ def run_sync():
             conn.execute("DELETE FROM stock")
             conn.execute("DELETE FROM products")
             conn.executemany(
-                "INSERT INTO products (sku, name, name_norm, item_type, price) VALUES (?, ?, ?, ?, ?)",
+                "INSERT INTO products (sku, name, name_norm, item_type, price, image_url) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
                 product_rows,
             )
             conn.executemany(
@@ -95,15 +125,20 @@ def run_sync():
             )
         conn.close()
 
+        img_msg = f", {matched} con imagen" if image_map else ""
         sync_status.update({
             "is_running": False,
             "progress": 100,
             "total_products": len(product_rows),
             "last_sync": datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "message": f"Completado: {len(product_rows)} productos, {len(stock_rows)} registros de stock.",
+            "message": (
+                f"Completado: {len(product_rows)} productos{img_msg}, "
+                f"{len(stock_rows)} registros de stock."
+            ),
         })
         logger.info(
-            f"[Sync] Completado: {len(product_rows)} productos, {len(stock_rows)} registros de stock."
+            f"[Sync] Completado: {len(product_rows)} productos{img_msg}, "
+            f"{len(stock_rows)} registros de stock."
         )
 
     except Exception as e:
@@ -112,7 +147,7 @@ def run_sync():
             "progress": 0,
             "message": f"Error en sincronización: {str(e)}",
         })
-        logger.error(f"Error en sync SAP: {e}", exc_info=True)
+        logger.error(f"Error en sync: {e}", exc_info=True)
 
 
 def start_async_sync():

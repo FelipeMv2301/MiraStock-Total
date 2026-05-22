@@ -18,7 +18,8 @@ def init_db():
             name      TEXT NOT NULL,
             name_norm TEXT NOT NULL DEFAULT '',
             item_type TEXT NOT NULL DEFAULT 'Producto',
-            price     REAL NOT NULL DEFAULT 0
+            price     REAL NOT NULL DEFAULT 0,
+            image_url TEXT NOT NULL DEFAULT ''
         );
 
         CREATE TABLE IF NOT EXISTS stock (
@@ -31,5 +32,10 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_products_name_norm ON products(name_norm);
         CREATE INDEX IF NOT EXISTS idx_stock_sku ON stock(sku);
     """)
-    conn.commit()
+    # Migración segura: agrega image_url si la DB ya existía sin esa columna
+    try:
+        conn.execute("ALTER TABLE products ADD COLUMN image_url TEXT NOT NULL DEFAULT ''")
+        conn.commit()
+    except Exception:
+        pass  # La columna ya existe
     conn.close()

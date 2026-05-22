@@ -14,6 +14,7 @@ _PRODUCT_COLS = """
     p.name,
     p.item_type,
     p.price,
+    p.image_url,
     COALESCE(s01.on_hand, 0) AS stock_01,
     COALESCE(s11.on_hand, 0) AS stock_11,
     COALESCE(s15.on_hand, 0) AS stock_15,

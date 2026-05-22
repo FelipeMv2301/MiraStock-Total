@@ -123,8 +123,8 @@ async function lookupProduct(sku) {
 function displayProduct(p) {
     showView('product-view');
 
-    document.getElementById('product-sku').textContent  = p.sku || '';
-    document.getElementById('product-name').textContent = p.name || 'Sin nombre';
+    document.getElementById('product-sku').textContent   = p.sku || '';
+    document.getElementById('product-name').textContent  = p.name || 'Sin nombre';
     document.getElementById('product-price').textContent = formatPrice(p.price);
 
     const typeEl = document.getElementById('product-type-badge');
@@ -133,19 +133,31 @@ function displayProduct(p) {
         p.item_type === 'Material' ? 'type-badge-material' : 'type-badge-producto'
     }`;
 
-    const s01 = Math.round(p.stock_01 || 0);
-    const s11 = Math.round(p.stock_11 || 0);
-    const s15 = Math.round(p.stock_15 || 0);
-    const s30 = Math.round(p.stock_30 || 0);
+    // Imagen: mostrar columna solo si hay URL
+    const imgCol = document.getElementById('product-image-col');
+    const imgEl  = document.getElementById('product-image');
+    if (p.image_url) {
+        imgEl.src = p.image_url;
+        imgCol.classList.remove('hidden');
+        imgCol.classList.add('flex');
+    } else {
+        imgCol.classList.add('hidden');
+        imgCol.classList.remove('flex');
+    }
+
+    const s01   = Math.round(p.stock_01 || 0);
+    const s11   = Math.round(p.stock_11 || 0);
+    const s15   = Math.round(p.stock_15 || 0);
+    const s30   = Math.round(p.stock_30 || 0);
     const total = Math.round(p.total_stock || 0);
 
-    document.getElementById('product-stock-01').textContent = s01;
-    document.getElementById('product-stock-11').textContent = s11;
-    document.getElementById('product-stock-15').textContent = s15;
-    document.getElementById('product-stock-30').textContent = s30;
+    document.getElementById('product-stock-01').textContent    = s01;
+    document.getElementById('product-stock-11').textContent    = s11;
+    document.getElementById('product-stock-15').textContent    = s15;
+    document.getElementById('product-stock-30').textContent    = s30;
     document.getElementById('product-total-stock').textContent = total;
 
-    // Actualizar header badges
+    // Header badges
     document.getElementById('hdr-01').textContent = s01;
     document.getElementById('hdr-11').textContent = s11;
     document.getElementById('hdr-15').textContent = s15;
@@ -201,12 +213,21 @@ function renderCatalog(products) {
         const s30 = Math.round(p.stock_30 || 0);
         const total = Math.round(p.total_stock || 0);
         const hasStock = total > 0;
-
         const typeCls = p.item_type === 'Material' ? 'type-badge-material' : 'type-badge-producto';
+
+        // Sección de imagen (solo cuando hay URL)
+        const imageSection = p.image_url
+            ? `<div class="h-40 bg-gray-50 flex items-center justify-center p-3 border-b border-gray-100 relative overflow-hidden">
+                   <img src="${p.image_url}" alt="${p.name}"
+                        class="h-full object-contain transition-transform duration-300 hover:scale-105"
+                        onerror="this.closest('.h-40').classList.add('hidden')">
+               </div>`
+            : '';
 
         const card = document.createElement('div');
         card.className = 'product-card rounded-2xl border border-gray-100 overflow-hidden shadow-sm flex flex-col';
         card.innerHTML = `
+            ${imageSection}
             <div class="p-3 bg-gray-50 border-b border-gray-100 flex items-start justify-between gap-2">
                 <div class="flex flex-col min-w-0">
                     <span class="text-[9px] font-bold text-gray-400 uppercase font-mono truncate">${p.sku}</span>
@@ -281,15 +302,15 @@ document.getElementById('catalog-warehouse').addEventListener('change', () =>
 
 // --- 6. Modal de detalle ---
 function openProductModal(p) {
-    const s01 = Math.round(p.stock_01 || 0);
-    const s11 = Math.round(p.stock_11 || 0);
-    const s15 = Math.round(p.stock_15 || 0);
-    const s30 = Math.round(p.stock_30 || 0);
+    const s01   = Math.round(p.stock_01 || 0);
+    const s11   = Math.round(p.stock_11 || 0);
+    const s15   = Math.round(p.stock_15 || 0);
+    const s30   = Math.round(p.stock_30 || 0);
     const total = Math.round(p.total_stock || 0);
 
-    document.getElementById('modal-sku').textContent   = p.sku;
-    document.getElementById('modal-title').textContent = p.name;
-    document.getElementById('modal-price').textContent = formatPrice(p.price);
+    document.getElementById('modal-sku').textContent         = p.sku;
+    document.getElementById('modal-title').textContent       = p.name;
+    document.getElementById('modal-price').textContent       = formatPrice(p.price);
     document.getElementById('modal-total-stock').textContent = total;
 
     const badge = document.getElementById('modal-type-badge');
@@ -302,6 +323,18 @@ function openProductModal(p) {
     document.getElementById('modal-stock-11').textContent = s11;
     document.getElementById('modal-stock-15').textContent = s15;
     document.getElementById('modal-stock-30').textContent = s30;
+
+    // Imagen modal
+    const imgCol = document.getElementById('modal-image-col');
+    const imgEl  = document.getElementById('modal-image');
+    if (p.image_url) {
+        imgEl.src = p.image_url;
+        imgCol.classList.remove('hidden');
+        imgCol.classList.add('flex');
+    } else {
+        imgCol.classList.add('hidden');
+        imgCol.classList.remove('flex');
+    }
 
     document.getElementById('product-modal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
