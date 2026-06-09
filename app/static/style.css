@@ -164,6 +164,64 @@ body {
 .stock-badge-low { background-color: #fee2e2; color: #ef4444; }
 .stock-badge-ok  { background-color: #dcfce7; color: #16a34a; }
 
+/* Pills de filtro por bodega */
+.wh-pill {
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    border: 1.5px solid transparent;
+    opacity: 0.35;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    letter-spacing: 0.03em;
+}
+.wh-pill:hover  { opacity: 0.7; }
+.wh-pill.active { opacity: 1; transform: scale(1.08); }
+.wh-pill-01 { background: #fef3c7; color: #d97706; border-color: #fde68a; }
+.wh-pill-11 { background: #dbeafe; color: #2563eb; border-color: #bfdbfe; }
+.wh-pill-15 { background: #dcfce7; color: #16a34a; border-color: #bbf7d0; }
+.wh-pill-30 { background: #f3e8ff; color: #7c3aed; border-color: #e9d5ff; }
+
+/* Pills de filtro por canal (Tienda / Web / Tienda+Web) */
+.canal-pill {
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    border: 1.5px solid transparent;
+    opacity: 0.35;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    letter-spacing: 0.03em;
+}
+.canal-pill:hover  { opacity: 0.7; }
+.canal-pill.active { opacity: 1; transform: scale(1.08); }
+.canal-pill-tienda { background: #f0fdf4; color: #15803d; border-color: #86efac; }
+.canal-pill-web    { background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; }
+.canal-pill-ambos  { background: #fefce8; color: #a16207; border-color: #fde047; }
+
+/* Botón "Solo venta" activo */
+.sell-item-active {
+    background-color: #f97316 !important;
+    color: white !important;
+    border-color: #ea580c !important;
+}
+
+/* Fila de bodega en modal */
+.wh-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+}
+.wh-row.wh-01 { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+.wh-row.wh-11 { background: #eff6ff; border-color: #bfdbfe; color: #1e3a8a; }
+.wh-row.wh-15 { background: #f0fdf4; border-color: #bbf7d0; color: #14532d; }
+.wh-row.wh-30 { background: #faf5ff; border-color: #e9d5ff; color: #4c1d95; }
+
 /* Paginación */
 #pagination-controls button {
     min-width: 45px;
@@ -243,4 +301,47 @@ body {
 @media (max-width: 640px) {
     #app { padding: 1.5rem 1rem; }
     h1 { font-size: 2.5rem !important; }
+}
+
+/* Descripción de producto (HTML de WooCommerce o texto SAP) */
+.description-content {
+    line-height: 1.7;
+    word-break: break-word;
+}
+.description-content p {
+    margin-bottom: 0.6rem;
+}
+.description-content p:last-child {
+    margin-bottom: 0;
+}
+.description-content ul,
+.description-content ol {
+    padding-left: 1.25rem;
+    margin-bottom: 0.6rem;
+}
+.description-content ul { list-style-type: disc; }
+.description-content ol { list-style-type: decimal; }
+.description-content li {
+    margin-bottom: 0.2rem;
+}
+.description-content strong, .description-content b {
+    font-weight: 600;
+    color: #374151;
+}
+.description-content em, .description-content i {
+    font-style: italic;
+}
+.description-content a {
+    color: #f97316;
+    text-decoration: underline;
+}
+.description-content br {
+    display: block;
+    margin-bottom: 0.3rem;
+    content: "";
+}
+
+/* Chevron animado en toggle de filtros móvil */
+.rotate-180 {
+    transform: rotate(180deg);
 }

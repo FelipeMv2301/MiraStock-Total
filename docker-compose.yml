@@ -1,0 +1,12 @@
+services:
+  mirastock:
+    build: .
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_PATH=/data/mirastock.db
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
