@@ -1,8 +1,6 @@
 services:
-  mirastock:
+  app:
     build: .
-    ports:
-      - "8002:8001"
     env_file:
       - .env
     environment:
@@ -10,11 +8,21 @@ services:
     volumes:
       - ./data:/data
     restart: unless-stopped
-    networks:
-      - default
-      - caddy-net
 
-networks:
-  caddy-net:
-    external: true
-    name: mirastock-actualizado_default
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
