@@ -10,3 +10,11 @@ services:
     volumes:
       - ./data:/data
     restart: unless-stopped
+    networks:
+      - default
+      - caddy-net
+
+networks:
+  caddy-net:
+    external: true
+    name: mirastock-actualizado_default
