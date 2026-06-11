@@ -7,6 +7,10 @@ services:
       - DATABASE_PATH=/data/mirastock.db
     volumes:
       - ./data:/data
+      # Código montado desde el repo: git pull actualiza sin rebuild.
+      # Cambios en .py requieren "docker compose restart app"; los
+      # estáticos (js/html/css) se sirven directo del disco.
+      - ./app:/app/app
     restart: unless-stopped
 
   caddy:
