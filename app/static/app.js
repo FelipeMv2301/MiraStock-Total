@@ -1,4 +1,4 @@
-console.log("[MiraStock-Total] Sistema cargado.");
+console.log("[MiraStock-Total] Sistema cargado (v1.7).");
 
 let inputBuffer = '';
 let bufferTimeout = null;
@@ -216,7 +216,7 @@ async function lookupProduct(sku) {
         }
     } catch (err) {
         console.error("Error en lookup:", err);
-        showError('Error de red o servidor', sku);
+        showError(err && err.message ? `Error: ${err.message}` : 'Error de red o servidor', sku);
         startResetTimer();
     }
 }
