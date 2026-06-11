@@ -241,22 +241,22 @@ function displayProduct(p) {
         imgCol.classList.remove('flex');
     }
 
-    const s01   = Math.round(p.stock_01 || 0);
-    const s11   = Math.round(p.stock_11 || 0);
-    const s15   = Math.round(p.stock_15 || 0);
-    const s30   = Math.round(p.stock_30 || 0);
-    const total = Math.round(p.total_stock || 0);
+    // Auth: stock por bodega + total. Público: solo stock tienda y web.
+    const isAuthView = p.stock_01 !== undefined;
+    document.getElementById('product-wh-auth').classList.toggle('hidden', !isAuthView);
+    document.getElementById('product-wh-public').classList.toggle('hidden', isAuthView);
+    document.getElementById('product-total-box').classList.toggle('hidden', !isAuthView);
 
-    document.getElementById('product-stock-01').textContent    = s01;
-    document.getElementById('product-stock-11').textContent    = s11;
-    document.getElementById('product-stock-15').textContent    = s15;
-    document.getElementById('product-stock-30').textContent    = s30;
-    document.getElementById('product-total-stock').textContent = total;
-
-    document.getElementById('hdr-01').textContent = s01;
-    document.getElementById('hdr-11').textContent = s11;
-    document.getElementById('hdr-15').textContent = s15;
-    document.getElementById('hdr-30').textContent = s30;
+    if (isAuthView) {
+        document.getElementById('product-stock-01').textContent    = Math.round(p.stock_01 || 0);
+        document.getElementById('product-stock-11').textContent    = Math.round(p.stock_11 || 0);
+        document.getElementById('product-stock-15').textContent    = Math.round(p.stock_15 || 0);
+        document.getElementById('product-stock-30').textContent    = Math.round(p.stock_30 || 0);
+        document.getElementById('product-total-stock').textContent = Math.round(p.total_stock || 0);
+    } else {
+        document.getElementById('product-stock-tienda').textContent = Math.round(p.stock_tienda || 0);
+        document.getElementById('product-stock-web').textContent    = Math.round(p.stock_web || 0);
+    }
 }
 
 // --- 4. Catálogo ---

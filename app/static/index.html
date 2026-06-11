@@ -143,14 +143,14 @@
                                 <span class="text-[10px] uppercase font-bold text-gray-400">Precio Lista 1 (neto)</span>
                                 <div id="product-price" class="text-3xl md:text-4xl font-bold text-green-600"></div>
                             </div>
-                            <div class="text-center px-4 py-2 rounded-xl bg-slate-100 border border-slate-200">
+                            <div id="product-total-box" class="text-center px-4 py-2 rounded-xl bg-slate-100 border border-slate-200">
                                 <span class="text-[9px] uppercase font-bold text-slate-400 block">Total</span>
                                 <span id="product-total-stock" class="text-2xl font-black text-slate-700">--</span>
                             </div>
                         </div>
 
-                        <!-- Bodegas -->
-                        <div class="mb-6">
+                        <!-- Bodegas (autenticado) -->
+                        <div id="product-wh-auth" class="mb-6 hidden">
                             <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Stock por bodega</h4>
                             <div class="grid grid-cols-4 gap-2">
                                 <div class="wh-card wh-01">
@@ -168,6 +168,21 @@
                                 <div class="wh-card wh-30">
                                     <span class="wh-label">Bod. 30</span>
                                     <span id="product-stock-30" class="wh-value">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Disponibilidad (público) -->
+                        <div id="product-wh-public" class="mb-6 hidden">
+                            <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Disponibilidad</h4>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="wh-card wh-15">
+                                    <span class="wh-label">Tienda</span>
+                                    <span id="product-stock-tienda" class="wh-value">--</span>
+                                </div>
+                                <div class="wh-card wh-01">
+                                    <span class="wh-label">Web</span>
+                                    <span id="product-stock-web" class="wh-value">--</span>
                                 </div>
                             </div>
                         </div>
