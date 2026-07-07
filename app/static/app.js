@@ -226,7 +226,7 @@ function displayProduct(p) {
 
     document.getElementById('product-sku').textContent  = p.sku || '';
     document.getElementById('product-name').textContent = p.name || 'Sin nombre';
-    document.getElementById('product-price').textContent = formatPrice(p.price);
+    document.getElementById('product-price').textContent = formatPrice(resolveWebPrice(p).price);
 
 
     const imgCol = document.getElementById('product-image-col');

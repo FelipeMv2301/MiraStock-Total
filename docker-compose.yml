@@ -27,6 +27,15 @@ services:
       - app
     restart: unless-stopped
 
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --config /etc/cloudflared/config.yml run
+    volumes:
+      - ./cloudflared:/etc/cloudflared
+    depends_on:
+      - caddy
+    restart: unless-stopped
+
 volumes:
   caddy_data:
   caddy_config:

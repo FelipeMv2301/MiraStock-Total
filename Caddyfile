@@ -1,4 +1,4 @@
-mirastock.bioquimica.cl {
+:80 {
     reverse_proxy app:8001
 
     header {
