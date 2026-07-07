@@ -1,4 +1,4 @@
-console.log("[MiraStock-Total] Sistema cargado (v1.7).");
+console.log("[MiraStock-Total] Sistema cargado (v1.8).");
 
 let inputBuffer = '';
 let bufferTimeout = null;
